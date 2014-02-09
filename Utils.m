@@ -100,4 +100,20 @@ static const CGFloat domainAndRange[8] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0
 	CGFunctionRelease(linearBlendFunctionRef);
 	CGColorSpaceRelease(colorSpace);	
 }
+
+@end
+
+
+@implementation NSColor(ColorSimilarity)
+
+- (NSColor *)matchingForegroundColor
+{
+    NSColor *converted = [self colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    float r = [converted redComponent];
+    float g = [converted greenComponent];
+    float b = [converted blueComponent];
+    float yiq = (((r*256)*299) + ((g*256)*587) + ((b*256)*114))/1000;
+    return yiq>128 ? [NSColor blackColor] : [NSColor whiteColor];
+}
+
 @end

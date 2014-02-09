@@ -17,3 +17,9 @@
 - (void)gradientFillWithColor:(NSColor*)color;
 
 @end
+
+@interface NSColor(ColorSimilarity)
+
+- (NSColor *)matchingForegroundColor;
+
+@end
