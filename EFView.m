@@ -524,7 +524,8 @@ static void *_inoutputObservationContext = (void *)1094;
     return;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
     if ((([keyPath isEqualToString:@"inputs"]) || [keyPath isEqualToString:@"outputs"]) && (context == _inoutputObservationContext))
     {
 		NSSet *new = [change valueForKey:@"new"];
