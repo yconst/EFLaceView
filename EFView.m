@@ -337,19 +337,26 @@ static void *_inoutputObservationContext = (void *)1094;
             return;
         }
     }
-	NSRect bounds = NSInsetRect([self bounds],4,4);
-	const float backgroundAlpha = 0.7;
+    const int cornerRadius = 3;
+    const int vOffest = 4;
+    const float backgroundAlpha = 0.6;
+    
+    NSColor *normalColor = [NSColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.6];
+    NSColor *highlightColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
+    
+	NSRect bounds = NSInsetRect([self bounds],2,2);
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
     
 	//draw body background
-	[[[[self titleColor] blendedColorWithFraction:0.8 ofColor:[NSColor controlBackgroundColor]]colorWithAlphaComponent:backgroundAlpha] setFill];
-	[[NSBezierPath bezierPathWithBottomRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - stringSize.height) radius:8] fill];
+	[[[self titleColor] colorWithAlphaComponent:backgroundAlpha] setFill];
+	[[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height) radius:cornerRadius] gradientFillWithColor:[[NSColor controlHighlightColor] colorWithAlphaComponent:backgroundAlpha]];
 	
 	//draw title background
-	[[NSBezierPath bezierPathWithTopRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y + bounds.size.height - stringSize.height, bounds.size.width, stringSize.height) radius:8] gradientFillWithColor:[[self titleColor] colorWithAlphaComponent:backgroundAlpha]];
+    [[[self titleColor]colorWithAlphaComponent:backgroundAlpha] setFill];
+	[[NSBezierPath bezierPathWithTopRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y + bounds.size.height - stringSize.height-vOffest, bounds.size.width, stringSize.height + vOffest) radius:cornerRadius] fill];
 	
 	//draw title
-	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + (bounds.size.width -stringSize.width)/2,bounds.origin.y + bounds.size.height - stringSize.height) withAttributes:_stringAttributes];
+	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + vOffest,bounds.origin.y + bounds.size.height - stringSize.height - vOffest*0.5) withAttributes:_stringAttributes];
 	
 	// draw end of lace
 	for (NSDictionary *aDict in [self inputs])
@@ -386,9 +393,9 @@ static void *_inoutputObservationContext = (void *)1094;
 	}
 	
 	//draw outline
-	[(([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?[NSColor selectedControlColor]:[NSColor controlShadowColor] /*_titleColor*/ setStroke];
+	[(([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?highlightColor:normalColor setStroke];
 	float lineWidth = (([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?2.0:1.0;
-	NSBezierPath *shape = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(bounds,-lineWidth/2+0.15,-lineWidth/2+0.15) radius:8]; //0.15 to be perfect on a zoomed printing
+	NSBezierPath *shape = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(bounds,-lineWidth/2+0.15,-lineWidth/2+0.15) radius:cornerRadius]; //0.15 to be perfect on a zoomed printing
 	[shape setLineWidth:lineWidth];
 	[shape stroke];
 }
