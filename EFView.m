@@ -43,7 +43,7 @@ static void *_inoutputObservationContext = (void *)1094;
 		_title = @"Title bar";
 		NSSize titleSize = [[self title] sizeWithAttributes:_stringAttributes];
 		_titleColor = [NSColor greenColor];
-
+        
 		_verticalOffset = titleSize.height/2;
 		
 		[self setFrameSize:[self minimalSize]];
@@ -88,7 +88,7 @@ static void *_inoutputObservationContext = (void *)1094;
 
 - (void)setVerticalOffset:(float)aValue
 {
-	_verticalOffset = MAX(aValue,0);	
+	_verticalOffset = MAX(aValue,0);
 	[self setHeight:MAX([self minimalSize].height,[self height])];
 	[[self superview] setNeedsDisplay:YES];
 }
@@ -195,7 +195,7 @@ static void *_inoutputObservationContext = (void *)1094;
 
 - (NSMutableSet *)inputs
 {
-    return _inputs; 
+    return _inputs;
 }
 
 - (void)setInputs:(NSMutableSet *)aSet
@@ -222,7 +222,7 @@ static void *_inoutputObservationContext = (void *)1094;
 
 - (NSMutableSet *)outputs
 {
-	return _outputs; 
+	return _outputs;
 }
 
 - (void)setOutputs:(NSMutableSet *)aSet
@@ -319,7 +319,7 @@ static void *_inoutputObservationContext = (void *)1094;
 	}
 	
 	NSSize result;
-	result.width = MAX(titleSize.width+16,maxInputWidth+maxOutputWidth); 
+	result.width = MAX(titleSize.width+16,maxInputWidth+maxOutputWidth);
 	result.height = (titleSize.height)*(2.0+(([[self inputs] count]>[[self outputs] count])?[[self inputs] count]:[[self outputs] count])) + [self verticalOffset]+12;
 	return result;
 }
@@ -356,7 +356,7 @@ static void *_inoutputObservationContext = (void *)1094;
     {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
-		[[NSColor grayColor] set];
+		[[NSColor darkGrayColor] set];
 		NSPoint end = [self convertPoint: [self endHolePoint:aDict] fromView:[self superview]];
 		[path appendBezierPathWithOvalInRect:NSMakeRect(end.x-3,end.y-3,6,6)];
 		[path stroke];
@@ -373,7 +373,7 @@ static void *_inoutputObservationContext = (void *)1094;
     {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
-		[[NSColor grayColor] set];
+		[[NSColor darkGrayColor] set];
 		NSPoint start = [self convertPoint: [self startHolePoint:aDict] fromView:[self superview]];
 		[path appendBezierPathWithOvalInRect:NSMakeRect(start.x-3,start.y-3,6,6)];
 		[path stroke];
@@ -450,7 +450,7 @@ static void *_inoutputObservationContext = (void *)1094;
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
-	return (([self startHole:aPoint] != nil) || ([self endHole:aPoint] != nil))?nil:[super hitTest:aPoint]; 
+	return (([self startHole:aPoint] != nil) || ([self endHole:aPoint] != nil))?nil:[super hitTest:aPoint];
 }
 
 - (void)mouseDown:(NSEvent*)theEvent

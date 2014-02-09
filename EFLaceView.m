@@ -48,12 +48,12 @@ float treshold(float x,float tr)
 - (NSArray *)exposedBindings
 {
 	return @[cDataObjects, NSSelectedObjectsBinding];
-} 
+}
 
 + (NSSet *)keyPathsForValuesAffectingLaces
 {
     return [NSSet setWithObjects:cDataObjects, nil];
-} 
+}
 
 - (void)bind:(NSString *)bindingName toObject:(id)observableObject withKeyPath:(NSString *)observableKeyPath options:(NSDictionary *)options
 {
@@ -130,7 +130,7 @@ float treshold(float x,float tr)
 		[dummy bind:@"inputs" toObject:newDataObject withKeyPath:@"inputs" options:nil];
 		[dummy bind:@"outputs" toObject:newDataObject withKeyPath:@"outputs" options:nil];
 		
-        // BugFix: color updated  dummy -> newDataObject was missing 
+        // BugFix: color updated  dummy -> newDataObject was missing
         [newDataObject bind:@"titleColor" toObject:dummy withKeyPath:@"titleColor" options:nil];
         
 		[newDataObject bind:@"originX" toObject:dummy withKeyPath:@"originX" options:nil];
@@ -198,7 +198,7 @@ float treshold(float x,float tr)
 {
     if (context == _dataObjectsObservationContext)
     {
-		NSArray *_newDataObjects = [object valueForKeyPath:_dataObjectsKeyPath];		
+		NSArray *_newDataObjects = [object valueForKeyPath:_dataObjectsKeyPath];
 		
 		NSMutableArray *onlyNew = [_newDataObjects mutableCopy];
 		[onlyNew removeObject:[NSNull null]];
@@ -315,13 +315,13 @@ float treshold(float x,float tr)
 
 -(void)drawLinkFrom:(NSPoint)startPoint to:(NSPoint)endPoint color:(NSColor *)insideColor
 {
-	// a lace is made of an outside gray line of width 5, and a inside insideColor(ed) line of width 3
+	// a lace is made of a gray line of width 2
 	
 	NSPoint p0 = NSMakePoint(startPoint.x,startPoint.y );
 	NSPoint p3 = NSMakePoint(endPoint.x,endPoint.y );
 	
 	NSPoint p1 = NSMakePoint(startPoint.x+treshold((endPoint.x - startPoint.x)/2,50),startPoint.y);
-	NSPoint p2 = NSMakePoint(endPoint.x -treshold((endPoint.x - startPoint.x)/2,50),endPoint.y);	
+	NSPoint p2 = NSMakePoint(endPoint.x -treshold((endPoint.x - startPoint.x)/2,50),endPoint.y);
 	
 	//p0 and p1 are on the same horizontal line
 	//distance between p0 and p1 is set with the treshold fuction
@@ -352,19 +352,11 @@ float treshold(float x,float tr)
 	[path fill];
 	
 	path = [NSBezierPath bezierPath];
-	[path setLineWidth:5];
-	[path moveToPoint:p0];
-	[path curveToPoint:p3 controlPoint1:p1 controlPoint2:p2];
-	[[NSColor grayColor] set];
-	[path stroke];
-	
-	path = [NSBezierPath bezierPath];
-	[path setLineWidth:3];
+	[path setLineWidth:2];
 	[path moveToPoint:p0];
 	[path curveToPoint:p3 controlPoint1:p1 controlPoint2:p2];
 	[insideColor set];
-	[path stroke];
-}
+	[path stroke];}
 
 //- (BOOL)isOpaque {
 //	return YES;
@@ -385,6 +377,8 @@ float treshold(float x,float tr)
     }
 	
 	// Draw laces
+    NSColor *normalLaceColor = [NSColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.6];
+    NSColor *highlightLaceColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
 	for (id startObject in [self dataObjects])
     {
 		id startHoles = [startObject valueForKey:@"outputs"];
@@ -404,11 +398,11 @@ float treshold(float x,float tr)
 						NSPoint endPoint = [endView endHolePoint:endHole];
 						if (startView.isSelected || endView.isSelected)
                         {
-							[self drawLinkFrom:startPoint to:endPoint color:([NSGraphicsContext currentContextDrawingToScreen])?[NSColor selectedControlColor]:[NSColor yellowColor]];
+							[self drawLinkFrom:startPoint to:endPoint color:([NSGraphicsContext currentContextDrawingToScreen])?highlightLaceColor:normalLaceColor];
 						}
                         else
                         {
-							[self drawLinkFrom:startPoint to:endPoint color:[NSColor yellowColor]];
+							[self drawLinkFrom:startPoint to:endPoint color:normalLaceColor];
 						}
 					}
 				}
@@ -422,11 +416,11 @@ float treshold(float x,float tr)
 		if (([self isEndHole:_endPoint])&&(_endSubView != _startSubView))
         {
 			_endPoint = [_endSubView endHolePoint:_endHole];
-			[self drawLinkFrom:_startPoint to:_endPoint color:[NSColor yellowColor]];
+			[self drawLinkFrom:_startPoint to:_endPoint color:highlightLaceColor];
 		}
         else
         {
-			[self drawLinkFrom:_startPoint to:_endPoint color:([NSGraphicsContext currentContextDrawingToScreen])?[NSColor whiteColor]:[NSColor yellowColor]];
+			[self drawLinkFrom:_startPoint to:_endPoint color:normalLaceColor];
 		}
 	}
 	
@@ -442,7 +436,7 @@ float treshold(float x,float tr)
 		//NSFrameRect(rubber);
 		[NSBezierPath strokeRect:rubber];
 	}
-}	
+}
 
 #pragma mark geometry
 
@@ -638,8 +632,8 @@ float treshold(float x,float tr)
 		}
 		
 		// We clicked on an end hole
-		// Dragging from an existing connection end will disconnect and recontinue the drag 
-		NSEnumerator *enu = [[self laces] reverseObjectEnumerator]; // last created lace first 
+		// Dragging from an existing connection end will disconnect and recontinue the drag
+		NSEnumerator *enu = [[self laces] reverseObjectEnumerator]; // last created lace first
 		NSDictionary *aDict;
 		while ((aDict = [enu nextObject]))
 		{
