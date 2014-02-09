@@ -364,17 +364,38 @@ float treshold(float x,float tr)
 
 - (void)drawRect:(NSRect)rect
 {
-	// Draw frame
+    if (self.delegate && ![self.delegate ShouldDrawEFLaceView:self])
+    {
+        return;
+    }
+    
+    // Draw frame
 	//	NSEraseRect(rect);
 	//	if (![NSGraphicsContext currentContextDrawingToScreen])
 	//	{
 	//		NSFrameRect([self bounds]);
 	//	}
     
-    if (self.delegate && ![self.delegate ShouldDrawEFLaceView:self])
-    {
-        return;
-    }
+    // Draw Grid (from Apple Sketch)
+    // Figure out a big bezier path that corresponds to the entire grid. It will consist of the vertical lines and then the horizontal lines.
+    float hSpacing = 140;
+    float vSpacing = 80;
+	NSBezierPath *gridPath = [NSBezierPath bezierPath];
+	NSInteger lastVerticalLineNumber = floor(NSMaxX(rect) / hSpacing);
+	for (NSInteger lineNumber = ceil(NSMinX(rect) / hSpacing); lineNumber<=lastVerticalLineNumber; lineNumber++) {
+	    [gridPath moveToPoint:NSMakePoint((lineNumber * hSpacing)+0.5, NSMinY(rect))];
+	    [gridPath lineToPoint:NSMakePoint((lineNumber * hSpacing)+0.5, NSMaxY(rect))];
+	}
+	NSInteger lastHorizontalLineNumber = floor(NSMaxY(rect) / vSpacing);
+	for (NSInteger lineNumber = ceil(NSMinY(rect) / vSpacing); lineNumber<=lastHorizontalLineNumber; lineNumber++) {
+	    [gridPath moveToPoint:NSMakePoint(NSMinX(rect), (lineNumber * vSpacing)+0.5)];
+	    [gridPath lineToPoint:NSMakePoint(NSMaxX(rect), (lineNumber * vSpacing)+0.5)];
+	}
+	
+	// Draw the grid as one-pixel-wide lines.
+	[[NSColor colorWithRed:0 green:0 blue:0 alpha:0.05] set];
+	[gridPath setLineWidth:1.0];
+	[gridPath stroke];
 	
 	// Draw laces
     NSColor *normalLaceColor = [NSColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.6];
@@ -536,6 +557,7 @@ float treshold(float x,float tr)
 	[self didChangeValueForKey:@"laces"];
 	
 	[[startHole mutableSetValueForKey:@"laces"] addObject:endHole];
+    // [[endHole mutableSetValueForKey:@"laces"] addObject:startHole]; // Is this needed?
 }
 
 #pragma mark events
