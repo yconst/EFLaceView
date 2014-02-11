@@ -358,6 +358,7 @@ static void *_inoutputObservationContext = (void *)1094;
 	//draw title
     _stringAttributes[NSForegroundColorAttributeName] = [[self titleColor] matchingForegroundColor];
 	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + vOffest,bounds.origin.y + bounds.size.height - stringSize.height - vOffest*0.5) withAttributes:_stringAttributes];
+    _stringAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
 	
 	// draw end of lace
 	for (NSDictionary *aDict in [self inputs])
