@@ -370,11 +370,8 @@ float treshold(float x,float tr)
     }
     
     // Draw frame
-	//	NSEraseRect(rect);
-	//	if (![NSGraphicsContext currentContextDrawingToScreen])
-	//	{
-	//		NSFrameRect([self bounds]);
-	//	}
+	[[NSColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0] setFill];
+    NSRectFill(rect);
     
     // Draw Grid (from Apple Sketch)
     // Figure out a big bezier path that corresponds to the entire grid. It will consist of the vertical lines and then the horizontal lines.
