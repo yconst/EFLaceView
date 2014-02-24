@@ -37,7 +37,8 @@ NSString *const cColorAsData = @"colorAsData";
     if (color == nil) {
         NSData *colorData = [self valueForKey:cColorAsData];
 		if (colorData == nil) {
-			[self setValue:[NSKeyedArchiver archivedDataWithRootObject:[NSColor grayColor]]
+            NSColor *defaultColor = [NSColor colorWithWhite:1.0 alpha:0.9];
+			[self setValue:[NSKeyedArchiver archivedDataWithRootObject:defaultColor]
 					forKey:cColorAsData];
 				colorData = [self valueForKey:cColorAsData];
 		}

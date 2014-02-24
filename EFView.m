@@ -284,7 +284,7 @@ static void *_inoutputObservationContext = (void *)1094;
 	int hole =  [[self orderedHoles:[self inputs]] indexOfObject:aEndHole]+1;
 	
 	NSAssert( (hole <= [[self inputs] count]),@"hole should be within Inputs range in endholePoint:");
-	return [self convertPoint:NSMakePoint(5+4,[self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
+	return [self convertPoint:NSMakePoint(9+4,[self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
 }
 
 - (NSPoint)startHolePoint:(id) aStartHole
@@ -295,7 +295,7 @@ static void *_inoutputObservationContext = (void *)1094;
 	int hole =  [[self orderedHoles:[self outputs]] indexOfObject:aStartHole]+1;
 	
 	NSAssert( (hole <= [[self outputs] count]),@"hole should be within Outputs range in startholePoint:");
-	return [self convertPoint:NSMakePoint([self bounds].origin.x+[self bounds].size.width-5-4, [self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
+	return [self convertPoint:NSMakePoint([self bounds].origin.x+[self bounds].size.width-9-4, [self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
 }
 
 - (NSSize) minimalSize
@@ -306,7 +306,7 @@ static void *_inoutputObservationContext = (void *)1094;
 	for (i=0; i<[[self inputs] count]; i++)
     {
 		NSString* inputLabel = [[self orderedInputs][(unsigned)i] valueForKey:@"label"];
-		float inputWidth = 10+4+[inputLabel sizeWithAttributes:_stringAttributes].width + 5;
+		float inputWidth = 16+4+[inputLabel sizeWithAttributes:_stringAttributes].width + 9;
 		maxInputWidth = MAX(inputWidth,maxInputWidth);
 	}
 	float maxOutputWidth = 0;
@@ -314,13 +314,13 @@ static void *_inoutputObservationContext = (void *)1094;
 	for (j=0; j<[[self outputs] count]; j++)
     {
 		NSString* outputLabel = [[self orderedOutputs][(unsigned)j] valueForKey:@"label"];
-		float outputWidth =10+4+[outputLabel sizeWithAttributes:_stringAttributes].width + 5;
+		float outputWidth =16+4+[outputLabel sizeWithAttributes:_stringAttributes].width + 9;
 		maxOutputWidth = MAX(outputWidth,maxOutputWidth);
 	}
 	
 	NSSize result;
 	result.width = MAX(titleSize.width+16,maxInputWidth+maxOutputWidth);
-	result.height = (titleSize.height)*(2.0+(([[self inputs] count]>[[self outputs] count])?[[self inputs] count]:[[self outputs] count])) + [self verticalOffset]+12;
+	result.height = (titleSize.height)*(2.0+(([[self inputs] count]>[[self outputs] count])?[[self inputs] count]:[[self outputs] count])) + [self verticalOffset]+8;
 	return result;
 }
 
@@ -337,67 +337,84 @@ static void *_inoutputObservationContext = (void *)1094;
             return;
         }
     }
-    const int cornerRadius = 3;
+    const int cornerRadius = 0;
     const int vOffest = 4;
-    const float backgroundAlpha = 0.6;
+    const int plugRadius = 4;
     
-    NSColor *normalColor = [NSColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.6];
-    NSColor *highlightColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
+    NSColor *bgColor = [NSColor colorWithWhite:1.0 alpha:0.9];
+    NSColor *fgColor = [NSColor colorWithRed:0.45 green:0.45 blue:0.45 alpha:0.9];
+    NSColor *wireHighlightColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
     
 	NSRect bounds = NSInsetRect([self bounds],2,2);
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
     
 	//draw body background
-	[[[self titleColor] colorWithAlphaComponent:backgroundAlpha] setFill];
-	[[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height) radius:cornerRadius] gradientFillWithColor:[[NSColor controlHighlightColor] colorWithAlphaComponent:backgroundAlpha]];
+	[bgColor setFill];
+    NSRect border = NSMakeRect(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - stringSize.height - vOffest);
+	[[NSBezierPath bezierPathWithBottomRoundedRect:border radius:cornerRadius] fill];
 	
 	//draw title background
-    [[[self titleColor]colorWithAlphaComponent:backgroundAlpha] setFill];
+    [[self titleColor] setFill];
 	[[NSBezierPath bezierPathWithTopRoundedRect:NSMakeRect(bounds.origin.x, bounds.origin.y + bounds.size.height - stringSize.height-vOffest, bounds.size.width, stringSize.height + vOffest) radius:cornerRadius] fill];
 	
 	//draw title
     _stringAttributes[NSForegroundColorAttributeName] = [[self titleColor] matchingForegroundColor];
 	[[self title] drawAtPoint:NSMakePoint(bounds.origin.x + vOffest,bounds.origin.y + bounds.size.height - stringSize.height - vOffest*0.5) withAttributes:_stringAttributes];
-    _stringAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
+    _stringAttributes[NSForegroundColorAttributeName] = fgColor;
 	
 	// draw end of lace
-	for (NSDictionary *aDict in [self inputs])
+	for (id anInput in [self inputs])
     {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
-		[[NSColor darkGrayColor] set];
-		NSPoint end = [self convertPoint: [self endHolePoint:aDict] fromView:[self superview]];
-		[path appendBezierPathWithOvalInRect:NSMakeRect(end.x-3,end.y-3,6,6)];
+		[fgColor set];
+		NSPoint end = [self convertPoint: [self endHolePoint:anInput] fromView:[self superview]];
+		[path appendBezierPathWithOvalInRect:NSMakeRect(end.x-plugRadius,end.y-plugRadius,plugRadius*2,plugRadius*2)];
 		[path stroke];
+        if ([[anInput laces] count])
+        {
+            NSBezierPath *innerPath = [NSBezierPath bezierPath];
+            int innerRadius = plugRadius - 2;
+            [innerPath appendBezierPathWithOvalInRect:NSMakeRect(end.x-innerRadius,end.y-innerRadius,innerRadius*2,innerRadius*2)];
+            [innerPath fill];
+        }
 		NSPoint labelOrigin;
-		NSString *inputLabel = [aDict valueForKey:@"label"];
-		labelOrigin.x = end.x +5;
+		NSString *inputLabel = [anInput valueForKey:@"label"];
+		labelOrigin.x = end.x + 9;
 		labelOrigin.y = end.y - stringSize.height/2;
-		[[NSColor blackColor] set];
 		[inputLabel drawAtPoint:labelOrigin withAttributes:_stringAttributes];
 	}
 	
 	// draw start of lace
-	for (NSDictionary *aDict in [self outputs])
+	for (id anOutput in [self outputs])
     {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:1];
 		[[NSColor darkGrayColor] set];
-		NSPoint start = [self convertPoint: [self startHolePoint:aDict] fromView:[self superview]];
-		[path appendBezierPathWithOvalInRect:NSMakeRect(start.x-3,start.y-3,6,6)];
+		NSPoint start = [self convertPoint: [self startHolePoint:anOutput] fromView:[self superview]];
+		[path appendBezierPathWithOvalInRect:NSMakeRect(start.x-plugRadius,start.y-plugRadius,plugRadius*2,plugRadius*2)];
 		[path stroke];
+        if ([[anOutput laces] count])
+        {
+            NSBezierPath *innerPath = [NSBezierPath bezierPath];
+            int innerRadius = plugRadius - 2;
+            [innerPath appendBezierPathWithOvalInRect:NSMakeRect(start.x-innerRadius,start.y-innerRadius,innerRadius*2,innerRadius*2)];
+            [innerPath fill];
+        }
 		NSPoint labelOrigin;
-		NSString *outputLabel = [aDict valueForKey:@"label"];
-		labelOrigin.x = start.x - 5 - [outputLabel sizeWithAttributes:_stringAttributes].width;
+		NSString *outputLabel = [anOutput valueForKey:@"label"];
+		labelOrigin.x = start.x - 9 - [outputLabel sizeWithAttributes:_stringAttributes].width;
 		labelOrigin.y = start.y - stringSize.height/2;
-		[[NSColor blackColor] set];
 		[outputLabel drawAtPoint:labelOrigin withAttributes:_stringAttributes];
 	}
 	
 	//draw outline
-	[(([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?highlightColor:normalColor setStroke];
-	float lineWidth = (([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]))?2.0:1.0;
-	NSBezierPath *shape = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(bounds,-lineWidth/2+0.15,-lineWidth/2+0.15) radius:cornerRadius]; //0.15 to be perfect on a zoomed printing
+    BOOL isSelected = (([self isSelected])&&([NSGraphicsContext currentContextDrawingToScreen]));
+	[isSelected? wireHighlightColor:fgColor setStroke];
+	float lineWidth = isSelected?2.0:1.0;
+    //0.15 to be perfect on a zoomed printing
+    NSRect insetRect = NSInsetRect(bounds,-lineWidth/2+0.15,-lineWidth/2+0.15);
+	NSBezierPath *shape = [NSBezierPath bezierPathWithRoundedRect:insetRect radius:cornerRadius];
 	[shape setLineWidth:lineWidth];
 	[shape stroke];
 }

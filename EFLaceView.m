@@ -370,7 +370,7 @@ float treshold(float x,float tr)
     }
     
     // Draw frame
-	[[NSColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0] setFill];
+	[[NSColor colorWithRed:0.569 green:0.576 blue:0.588 alpha:1.0] setFill];
     NSRectFill(rect);
     
     // Draw Grid (from Apple Sketch)
@@ -390,7 +390,7 @@ float treshold(float x,float tr)
 	}
 	
 	// Draw the grid as one-pixel-wide lines.
-	[[NSColor colorWithRed:0 green:0 blue:0 alpha:0.05] set];
+	[[NSColor colorWithRed:0 green:0 blue:0 alpha:0.07] set];
 	[gridPath setLineWidth:1.0];
 	[gridPath stroke];
 	
