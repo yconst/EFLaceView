@@ -342,8 +342,8 @@ static void *_inoutputObservationContext = (void *)1094;
     const int plugRadius = 4;
     
     NSColor *bgColor = [NSColor colorWithWhite:1.0 alpha:0.9];
-    NSColor *fgColor = [NSColor colorWithRed:0.45 green:0.45 blue:0.45 alpha:0.9];
-    NSColor *wireHighlightColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
+    NSColor *fgColor = [NSColor colorWithRed:0.41 green:0.41 blue:0.41 alpha:1.0];
+    NSColor *wireHighlightColor = [NSColor colorWithRed:0.0 green:0.4 blue:0.8 alpha:1.0];
     
 	NSRect bounds = NSInsetRect([self bounds],2,2);
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];

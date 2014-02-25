@@ -26,8 +26,8 @@ NSString *const cDataObjects = @"dataObjects";
 
 #pragma mark utility functions
 
-float treshold(float x,float tr);
-float treshold(float x,float tr)
+float threshold(float x,float tr);
+float threshold(float x,float tr)
 {
 	return (x>0)?((x>tr)?x:tr):-x+tr;
 }
@@ -316,15 +316,19 @@ float treshold(float x,float tr)
 -(void)drawLinkFrom:(NSPoint)startPoint to:(NSPoint)endPoint color:(NSColor *)insideColor
 {
 	// a lace is made of a gray line of width 2
+	int margin = 10;
+    
+    NSPoint ps = NSMakePoint(startPoint.x,startPoint.y );
+	NSPoint pe = NSMakePoint(endPoint.x,endPoint.y );
+    
+	NSPoint p0 = NSMakePoint(startPoint.x + margin,startPoint.y );
+	NSPoint p3 = NSMakePoint(endPoint.x - margin,endPoint.y );
 	
-	NSPoint p0 = NSMakePoint(startPoint.x,startPoint.y );
-	NSPoint p3 = NSMakePoint(endPoint.x,endPoint.y );
-	
-	NSPoint p1 = NSMakePoint(startPoint.x+treshold((endPoint.x - startPoint.x)/2,50),startPoint.y);
-	NSPoint p2 = NSMakePoint(endPoint.x -treshold((endPoint.x - startPoint.x)/2,50),endPoint.y);
+	NSPoint p1 = NSMakePoint(startPoint.x+threshold((endPoint.x - startPoint.x)/2,50),startPoint.y);
+	NSPoint p2 = NSMakePoint(endPoint.x -threshold((endPoint.x - startPoint.x)/2,50),endPoint.y);
 	
 	//p0 and p1 are on the same horizontal line
-	//distance between p0 and p1 is set with the treshold fuction
+	//distance between p0 and p1 is set with the threshold fuction
 	//the same holds for p2 and p3
 	
 	NSBezierPath* path = [NSBezierPath bezierPath];
@@ -351,12 +355,27 @@ float treshold(float x,float tr)
 	[path appendBezierPathWithOvalInRect:NSMakeRect(endPoint.x-1.5,endPoint.y-1.5,3,3)];
 	[path fill];
 	
+    path = [NSBezierPath bezierPath];
+	[path setLineWidth:2];
+	[path moveToPoint:ps];
+	[path lineToPoint:p0];
+	[insideColor set];
+	[path stroke];
+    
 	path = [NSBezierPath bezierPath];
 	[path setLineWidth:2];
 	[path moveToPoint:p0];
 	[path curveToPoint:p3 controlPoint1:p1 controlPoint2:p2];
 	[insideColor set];
-	[path stroke];}
+	[path stroke];
+    
+    path = [NSBezierPath bezierPath];
+	[path setLineWidth:2];
+	[path moveToPoint:p3];
+	[path lineToPoint:pe];
+	[insideColor set];
+	[path stroke];
+}
 
 //- (BOOL)isOpaque {
 //	return YES;
@@ -370,7 +389,7 @@ float treshold(float x,float tr)
     }
     
     // Draw frame
-	[[NSColor colorWithRed:0.569 green:0.576 blue:0.588 alpha:1.0] setFill];
+	[[NSColor colorWithRed:0.609 green:0.616 blue:0.628 alpha:1.0] setFill];
     NSRectFill(rect);
     
     // Draw Grid (from Apple Sketch)
@@ -396,7 +415,7 @@ float treshold(float x,float tr)
 	
 	// Draw laces
     NSColor *normalLaceColor = [NSColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.6];
-    NSColor *highlightLaceColor = [NSColor colorWithRed:0.3 green:0.6 blue:0.9 alpha:1.0];
+    NSColor *highlightLaceColor = [NSColor colorWithRed:0.0 green:0.4 blue:0.8 alpha:1.0];
 	for (id startObject in [self dataObjects])
     {
 		id startHoles = [startObject valueForKey:@"outputs"];
