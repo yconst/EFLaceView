@@ -573,7 +573,6 @@ float threshold(float x,float tr)
 	[self didChangeValueForKey:@"laces"];
 	
 	[[startHole mutableSetValueForKey:@"laces"] addObject:endHole];
-    [[endHole mutableSetValueForKey:@"laces"] addObject:startHole];
 }
 
 #pragma mark events
