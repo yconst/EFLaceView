@@ -245,9 +245,9 @@ static void *_inoutputObservationContext = (void *)1094;
 	NSPoint mousePos = [self convertPoint:aPoint fromView:[self superview]];
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
-	if ((mousePos.x>0) && (mousePos.x <15))
+	if ((mousePos.x>5) && (mousePos.x <25))
     {
-		int hole = (-mousePos.y + [self bounds].origin.y + [self bounds].size.height - [self verticalOffset] - heightOfText*0.5 ) / heightOfText;
+		int hole = (-mousePos.y + [self bounds].size.height - [self verticalOffset] - heightOfText*0.5 ) / heightOfText;
 		id res = ((hole >0)&&(hole <=[[self inputs] count]))?[self orderedInputs][hole-1]:nil;
 		if (res)
         {
@@ -263,9 +263,9 @@ static void *_inoutputObservationContext = (void *)1094;
 	NSPoint mousePos = [self convertPoint:aPoint fromView:[self superview]];
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
-	if ((mousePos.x>[self bounds].origin.x+[self bounds].size.width-15) && (mousePos.x <[self bounds].origin.x+[self bounds].size.width))
+	if ((mousePos.x>[self bounds].size.width-25) && (mousePos.x <[self bounds].size.width-5))
     {
-		int hole = (-mousePos.y + [self bounds].origin.y + [self bounds].size.height - [self verticalOffset] - heightOfText*0.5) / heightOfText;
+		int hole = (-mousePos.y + [self bounds].size.height - [self verticalOffset] - heightOfText*0.5) / heightOfText;
 		id res = ((hole >0)&&(hole <=[[self outputs] count]))?[self orderedOutputs][hole-1]:nil;
 		if (res)
         {
@@ -281,10 +281,12 @@ static void *_inoutputObservationContext = (void *)1094;
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
 	
-	int hole =  [[self orderedHoles:[self inputs]] indexOfObject:aEndHole]+1;
+	long hole =  [[self orderedHoles:[self inputs]] indexOfObject:aEndHole]+1;
 	
-	NSAssert( (hole <= [[self inputs] count]),@"hole should be within Inputs range in endholePoint:");
-	return [self convertPoint:NSMakePoint(9+4,[self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
+	NSAssert((hole <= [[self inputs] count]), @"hole should be within Inputs range in endholePoint:");
+    long pX = 9+4;
+    long pY = [self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0);
+	return [self convertPoint:NSMakePoint(pX,pY) toView:[self superview]];
 }
 
 - (NSPoint)startHolePoint:(id) aStartHole
@@ -292,13 +294,15 @@ static void *_inoutputObservationContext = (void *)1094;
 	NSSize stringSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float heightOfText = stringSize.height;
 	
-	int hole =  [[self orderedHoles:[self outputs]] indexOfObject:aStartHole]+1;
+	long hole =  [[self orderedHoles:[self outputs]] indexOfObject:aStartHole]+1;
 	
-	NSAssert( (hole <= [[self outputs] count]),@"hole should be within Outputs range in startholePoint:");
-	return [self convertPoint:NSMakePoint([self bounds].origin.x+[self bounds].size.width-9-4, [self bounds].origin.y+[self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0)) toView:[self superview]];
+	NSAssert((hole <= [[self outputs] count]), @"hole should be within Outputs range in startholePoint:");
+    long pX = [self bounds].size.width-9-4;
+    long pY = [self bounds].size.height - [self verticalOffset] - heightOfText * (hole+1.0);
+	return [self convertPoint:NSMakePoint(pX, pY) toView:[self superview]];
 }
 
-- (NSSize) minimalSize
+- (NSSize)minimalSize
 {
 	NSSize titleSize = [[self title] sizeWithAttributes:_stringAttributes];
 	float maxInputWidth = 0;
@@ -573,8 +577,9 @@ static void *_inoutputObservationContext = (void *)1094;
 		}
 		
 		//update size and redraw
-		[self setWidth:MAX([self minimalSize].width,[self width])];
-		[self setHeight:MAX([self minimalSize].height,[self height])];
+        NSSize size = [self minimalSize];
+		[self setWidth:size.width];
+		[self setHeight:size.height];
 		[[self superview] setNeedsDisplay:YES];
 		
     }

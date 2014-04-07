@@ -427,6 +427,8 @@ float threshold(float x,float tr)
 				NSSet * endHoles = [startHole valueForKey:@"laces"];
 				if ([endHoles count]>0)
                 {
+                    NSColor *startHoleColor = [startHole valueForKey:@"laceColor"];
+                    NSColor *laceColor = startHoleColor?startHoleColor:normalLaceColor;
 					NSPoint startPoint = [startView startHolePoint:startHole];
 					for (id endHole in endHoles)
                     {
@@ -439,7 +441,7 @@ float threshold(float x,float tr)
 						}
                         else
                         {
-							[self drawLinkFrom:startPoint to:endPoint color:normalLaceColor];
+							[self drawLinkFrom:startPoint to:endPoint color:laceColor];
 						}
 					}
 				}
@@ -457,7 +459,9 @@ float threshold(float x,float tr)
 		}
         else
         {
-			[self drawLinkFrom:_startPoint to:_endPoint color:normalLaceColor];
+            NSColor *startHoleColor = [_startHole valueForKey:@"laceColor"];
+            NSColor *laceColor = startHoleColor?startHoleColor:normalLaceColor;
+			[self drawLinkFrom:_startPoint to:_endPoint color:laceColor];
 		}
 	}
 	
@@ -494,7 +498,7 @@ float threshold(float x,float tr)
         return;
     }
 	NSMutableIndexSet *selection = [[self selectionIndexes] mutableCopy];
-	unsigned int DataObjectIndex = [[self dataObjects] indexOfObject:[aView valueForKey:@"data"]];
+	long DataObjectIndex = [[self dataObjects] indexOfObject:[aView valueForKey:@"data"]];
 	if (select)
     {
 		[selection addIndex:DataObjectIndex];
@@ -554,6 +558,8 @@ float threshold(float x,float tr)
     {
         return;
     }
+    
+    // check if holes belong to the same node
 	if ([startHole valueForKey:@"data"] == [endHole valueForKey:@"data"])
     {
 		return;
@@ -572,6 +578,10 @@ float threshold(float x,float tr)
 	[[self laces] addObject: conn];
 	[self didChangeValueForKey:@"laces"];
 	
+    if ([[endHole valueForKey:@"inputMode"] isEqualTo:@0])
+    {
+        [[endHole mutableSetValueForKey:@"laces"] removeAllObjects];
+    }
 	[[startHole mutableSetValueForKey:@"laces"] addObject:endHole];
 }
 
